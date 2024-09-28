@@ -1,53 +1,33 @@
-package com.example.tests;
 import org.openqa.selenium.By;
-import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
-import org.openqa.selenium.chrome.ChromeDriver;
+import org.openqa.selenium.safari.SafariDriver;
+import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.WebDriverWait;
+import org.openqa.selenium.interactions.Actions;
+import org.openqa.selenium.JavascriptExecutor;
 
-import io.github.bonigarcia.wdm.WebDriverManager;
+import java.time.Duration;
 
 public class SendKeysExample {
     public static void main(String[] args) {
-    	WebDriverManager.chromedriver().setup();
-
-        // Initialize ChromeDriver instance
-        WebDriver driver = new ChromeDriver();
-
-        // Maximize the browser window
+        // Initialize SafariDriver
+        WebDriver driver = new SafariDriver();
         driver.manage().window().maximize();
-        try {
-            // Launch the Google homepage
-            driver.get("https://www.google.com/");
+        driver.get("https://example.com");
 
-            // Slow down to observe the page loading
-            Thread.sleep(2000); // Wait for 2 seconds
+        // Wait for element to be visible
+        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10));
+        WebElement element = wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("elementId")));
+        element.sendKeys("text to input");
 
-            // Identify the search box element
-            WebElement searchBox = driver.findElement(By.name("q"));
+        // Handle complex interactions
+        Actions actions = new Actions(driver);
+        actions.moveToElement(element).click().sendKeys("text to input").perform();
 
-            // Slow down to observe the search box before entering text
-            Thread.sleep(2000); // Wait for 2 seconds
+        // Handle JavaScript-based inputs
+        ((JavascriptExecutor) driver).executeScript("arguments[0].value='text to input';", element);
 
-            // Use JavaScript Executor to enter text into the search box
-            JavascriptExecutor js = (JavascriptExecutor) driver;
-            js.executeScript("document.getElementsByName('q')[0].value= 'geeksforgeeks.org'");
-
-            // Slow down to observe the entered text
-            Thread.sleep(2000); // Wait for 2 seconds
-
-            // Retrieve the entered text to verify
-            String enteredText = searchBox.getAttribute("value");
-            System.out.println("Text entered: " + enteredText);
-
-            // Slow down before closing the browser
-            Thread.sleep(2000); // Wait for 2 seconds
-
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        } finally {
-            // Close the browser
-            driver.quit();
-        }
+        driver.quit();
     }
 }
